@@ -139,6 +139,7 @@ export function Message(props: MessageProps) {
   const unmount = useMemo(() => {
     return () => {
       if (parentDom && rootDom) {
+        // console.log('==>', parentDom);
         unmountComponentAtNode(parentDom as Element);
         rootDom.removeChild(parentDom);
       }
