@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import { KeepAlive,AliveScope } from "./index";
+import { KeepAlive, AliveScope } from "./index";
 import {
 	withKnobs,
 } from "@storybook/addon-knobs";

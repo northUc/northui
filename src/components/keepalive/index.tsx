@@ -5,16 +5,6 @@ import React, {
 	useRef,
 	useContext,
 } from "react";
-// import styled from "styled-components";
-// import { color, typography } from "../shared/styles";
-// import { darken, rgba, opacify } from "polished";
-// import { easing } from "../shared/animation";
-
-
-
-type KeepAliveProps = {
-	id: string;
-}
 
 const Context = createContext({});
 export function AliveScope(props:any) {

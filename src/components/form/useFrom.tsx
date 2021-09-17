@@ -1,6 +1,14 @@
 import React from 'react';
+import Schema from './async-validator';
+import {TypeField} from './field';
 interface callbacks {
-    onFinish?:(v:{})=>{}
+    onFinish?:(v:{})=>{},
+    onFinishFailed?:(v:{})=>{},
+}
+interface Rules {
+    required?:true,
+    min?:number,
+    max?:number
 }
 
 type ForceUpdate = () => void
@@ -11,17 +19,26 @@ class FormStore {
     }
     callbacks: callbacks
     forceUpdate:ForceUpdate
-
+    fieldEntities: TypeField[];
     constructor(forceUpdate:ForceUpdate){
         this.forceUpdate = forceUpdate
         this.store = {};// 他就是用来存放表单值的对象
         this.callbacks = {};
+        this.fieldEntities = [];
+    }
+    registerField = (fieldEntity:TypeField) => {
+        this.fieldEntities.push(fieldEntity)
+    }
+    _notifyAllEntities = () => {
+        this.fieldEntities.forEach((entiry:TypeField) => entiry.onStroeChange())
     }
     setFieldsValue = (newStore:{}) => {
         this.store = {...this.store,...newStore}// 把 newStore里面的属性都赋值给this.store
+        this._notifyAllEntities()
     }
     setFieldValue = (name:string,value:any) => {
         this.store[name] = value;
+        this._notifyAllEntities()
     }
     getFieldValue = (name:string) => {
         return this.store[name];// 获取store中的某个属性名的值
@@ -32,13 +49,46 @@ class FormStore {
     setCallbacks = (callbacks:{}) =>{
         this.callbacks = callbacks
     }
-    submit = () => {
-        let { onFinish } = this.callbacks;
-        console.log('==>1')
-        if(onFinish){
-            console.log('==>2')
-            onFinish(this.store)
+    setInitialValues = (initialValues:{}, mounted:boolean) => {
+        if(!mounted){
+            this.store = {...initialValues}
         }
+    }
+    submit = () => {
+        this.validateFields()
+        .then((values:any) => {
+            let { onFinish } = this.callbacks;
+            if(onFinish){
+                onFinish(values)
+            }
+        })
+        .catch((error:any) =>{
+            let { onFinishFailed } = this.callbacks;
+            if(onFinishFailed){
+                onFinishFailed(error)
+            } 
+        })
+    }
+    // 校验表单的值
+    validateFields = () => {
+        let values = this.getFieldsValue();// store
+        let descriptor = this.fieldEntities.reduce((
+            des:{
+                [_:string]:{}   
+            },
+            entity:TypeField,
+        )=>{
+            let rules = entity.props.rules;// [{required:true},{min:3}]
+            if (rules && rules.length>0) {
+                let config = rules.reduce((memo:Rules,rule:Rules)=>{
+                    memo = {...memo, ...rule};
+                    return memo
+                },{});// {required:ture,min:3}
+                des[entity.props.name] = config;
+            }
+            return des
+        },{})
+        return new Schema(descriptor).validate(values);
     }
     getForm = () => {
         return {
@@ -47,7 +97,9 @@ class FormStore {
             getFieldValue:this.getFieldValue,
             getFieldsValue:this.getFieldsValue,
             setCallbacks:this.setCallbacks,
-            submit:this.submit
+            submit:this.submit,
+            setInitialValues:this.setInitialValues,
+            registerField:this.registerField,
         }
     }
 }

@@ -155,7 +155,7 @@ class Tree extends React.Component<Props, State> {
     onMove = (toNode: TreeData) => {
         let fromNode = this.state.fromNode;
         if(!fromNode) return;
-        let fromChildren = fromNode!.parent!.children, toChildren = toNode.parent.children;
+        let fromChildren = fromNode!.parent!.children, toChildren = toNode.parent ? toNode.parent.children : [];
         let fromIndex = fromChildren!.findIndex((item: TreeData) => item === fromNode);
         let toIndex = toChildren!.findIndex(item => item === toNode);
         fromChildren!.splice(fromIndex, 1, toNode);

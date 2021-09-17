@@ -3,6 +3,7 @@ import FieldContext from './fieldContext';
 
 type Props = {
     name: string,
+    rules?: {}[]
     children: React.ReactElement,
 }
 type State = {}
@@ -15,14 +16,21 @@ type State = {}
  */
 class Field extends React.Component<Props,State>{
     static contextType = FieldContext; // this.contexy 获取 Provider里面的value
+    // 当组件挂载完成之后
+    componentDidMount(){
+        this.context.registerField(this);
+    }
+    onStroeChange = () => {
+        // 组件强制更新
+        this.forceUpdate();
+    }
     getContrilled = (childrenProps:React.ReactElement) =>{
         const {name} = this.props;
         const {getFieldValue, setFieldValue} = this.context;
         return {
             ...childrenProps,
             value:getFieldValue(name),
-            onChange:(event:React.FormEvent<HTMLFormElement>)=>{
-                console.log('==>1111',event.target.value);
+            onChange:(event:React.ChangeEvent<HTMLFormElement>)=>{
                 setFieldValue(name,event.target.value)
             }
         }
@@ -34,5 +42,5 @@ class Field extends React.Component<Props,State>{
             this.getContrilled((children as React.ReactElement).props))
     }
 }
-
+export type TypeField = Field
 export default Field;
