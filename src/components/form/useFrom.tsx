@@ -88,6 +88,25 @@ class FormStore {
             }
             return des
         },{})
+        /*
+        descriptor
+        {
+            "username": {
+                "required": true,
+                "min": 3
+            },
+            "password": {
+                "required": true
+            }
+        }
+        */
+       /*
+       values
+        {
+            "username": "11",
+            "password": "22"
+        }
+       */
         return new Schema(descriptor).validate(values);
     }
     getForm = () => {

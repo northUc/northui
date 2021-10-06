@@ -1,15 +1,9 @@
 import React,{useState} from "react";
-import { KeepAlive, AliveScope } from "./index";
+import { KeepAliveProvider,withKeepAlive } from "./index";
 import {
 	withKnobs,
 } from "@storybook/addon-knobs";
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-
-export default {
-	title: "KeepAlive",
-	component: KeepAlive,
-	decorators: [withKnobs],
-} as ComponentMeta<typeof KeepAlive>;
 
 function Counter() {
 	const [count, setCount] = useState(0);
@@ -20,26 +14,32 @@ function Counter() {
 		</div>
 	);
 }
-type ComponentType = ComponentStory<typeof KeepAlive>
+type ComponentType = ComponentStory<typeof KeepAliveProvider>
+
+
+
+const KeepAliveHome = withKeepAlive<typeof Counter>(Counter,{});
 
 export const App:ComponentType = function (args) {
 	const [show, setShow] = useState(true);
 	return (
-		<AliveScope>
+		<KeepAliveProvider>
 			<div>
 				<button onClick={() => setShow((show) => !show)}>Toggle</button>
 				<p>无 KeepAlive</p>
 				{show && <Counter />}
 				<p>有 KeepAlive</p>
 				{show && (
-					<KeepAlive id="Test">
-						<Counter />
-					</KeepAlive>
+					<KeepAliveHome />
 				)}
 			</div>
-		</AliveScope>
+		</KeepAliveProvider>
 	);
 }
-// App.args={
 
-// }
+
+export default {
+	title: "KeepAlive",
+	component: KeepAliveProvider,
+	decorators: [withKnobs],
+} as ComponentMeta<typeof KeepAliveProvider>;

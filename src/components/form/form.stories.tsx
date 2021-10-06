@@ -22,7 +22,7 @@ type ComponentType = ComponentStory<typeof Form>
 
 export const knobsForm:ComponentType = (args) => (
     <Form
-        initialValues={{username:'',password:''}}
+        initialValues={{username:'11',password:'22'}}
         onFinish={values => {
             console.log('Finish:', values);
         }}

@@ -1,35 +1,55 @@
-import React, { useReducer, useCallback, PropsWithChildren } from "react";
-import CacheContext,{Mount} from './cacheContext';
+
+
+import { useReducer,useCallback, PropsWithChildren } from "react";
 import cacheReducer from './cacheReducer';
+import CacheContext from './cacheContext';
 import * as cacheTypes from './cache-types';
-type Props = {
-    id: string,
-};
-function KeepAliveProvider(props:PropsWithChildren<Props>) {
-    let [cacheStates, dispatch] = useReducer(cacheReducer, {});
-    const mount:Mount = useCallback(({ cacheId, element }) => {
-        console.log('---element', element);
-        if(!cacheStates[cacheId]){
-            // dispatch({ type: cacheTypes.CREATE, payload: { cacheId, element } });
+type Props = {};
+type CacheState = {
+    doms: HTMLElement[],
+    status: cacheTypes.ALLTYPES
+}
+function KeepAliveProvider(props:PropsWithChildren<Props>){
+    //cacheStates存放所有的缓存信息 dispatch派发动作方法，可以通过派发动作修改缓存信息
+    let [cacheStates,dispatch] = useReducer(cacheReducer,{});
+    const mount = useCallback(({cacheId,reactElement})=>{
+        if(cacheStates[cacheId]){
+            let cacheState = cacheStates[cacheId] as CacheState;
+            if(cacheState.status === cacheTypes.DESTROY){
+                let doms = cacheState.doms;//获取 到老的真实DOM
+                doms.forEach(dom=>dom.parentNode?.removeChild(dom));
+                dispatch({type:cacheTypes.CREATE,payload:{cacheId,reactElement}});//创建缓存，开始代
+            }
+        }else{
+            dispatch({type:cacheTypes.CREATE,payload:{cacheId,reactElement}});//创建缓存，开始代孕
         }
-    }, [cacheStates]);
+    },[cacheStates]);
+    let handleScroll = useCallback((cacheId,event)=>{
+        if(cacheStates[cacheId]){
+            let target = event.target;
+            let scrolls = cacheStates[cacheId].scrolls;
+            scrolls[target]=target.scrollTop;
+        }
+    },[cacheStates]);
     return (
-        <CacheContext.Provider value={{ mount, cacheStates, dispatch }}>
+        <CacheContext.Provider value={{cacheStates,dispatch,mount,handleScroll}}>
             {props.children}
-            {Object.values(cacheStates).map(({ cacheId, element }) => (
-                <div
-                    id={`cache_${cacheId}`}
-                    key={cacheId}
-                    ref={(dom) => {
-                        let cacheState = cacheStates[cacheId];
-                        if (dom && (!cacheState.doms)) {
-                            let doms = Array.from(dom.childNodes);
-                            dispatch({ type: cacheTypes.CREATED, payload: { cacheId, doms } });
+            {
+                Object.values(cacheStates).filter(cacheState=>cacheState.status!==cacheTypes.DESTROY).map(({cacheId,reactElement})=>(
+                    <div id={`cache-${cacheId}`} key={cacheId} ref={
+                        //如果给原生组件添加了ref,那么当此真实DOM渲染到页之后会执行回调函数
+                        (divDOM)=>{
+                            let cacheState = cacheStates[cacheId];
+                            //这个过程是异步的 3 2 
+                            if(divDOM && (!cacheState.doms)){
+                                let doms = Array.from(divDOM.childNodes);
+                                dispatch({type:cacheTypes.CREATED,payload:{cacheId,doms}});
+                            }
                         }
-                    }}
-                >{element}</div>
-            ))}
+                    }>{reactElement}</div>//divDOM儿子们就是这个reactElement渲染出来的真实DOM
+                ))
+            }
         </CacheContext.Provider>
-    );
+    )
 }
 export default KeepAliveProvider;

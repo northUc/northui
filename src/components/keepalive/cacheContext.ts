@@ -4,12 +4,13 @@ import React from 'react';
 //     cacheStates: {},
 //     dispatch: {}
 // });
-const _Mount = (_:{cacheId: string, element : any})=>{};
+const _Mount = (_:{cacheId: string, reactElement : any})=>{};
 
 const defaultValue = {
     mount: _Mount,
     cacheStates: {},
-    dispatch: {}
+    dispatch: {},
+    handleScroll: (cacheId: any,event: any)=>{}
 }
 export type DefaultValue = typeof defaultValue;
 export type Mount = typeof _Mount;

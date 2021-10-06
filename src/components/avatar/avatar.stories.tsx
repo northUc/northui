@@ -27,7 +27,7 @@ knobsAvatar.args = {
     isLoading:boolean("isLoading", false),
 }
 
-export const large = () => (
+export const large = (args) => (
 	<div>
 		<Avatar isLoading size="large" />
 		<Avatar size="large" username="yehuozhili" />
@@ -62,7 +62,7 @@ export const small = () => (
 	</div>
 );
 
-export const tiny = () => (
+export const tiny = (args) => (
 	<div>
 		<Avatar isLoading size="tiny" />
 		<Avatar size="tiny" username="yehuozhili" />
