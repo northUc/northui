@@ -1,1 +1,1 @@
-[github](https://northuc.github.io/)
+[doc](https://northuc.github.io/)
