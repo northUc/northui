@@ -12,16 +12,16 @@ type CacheState = {
 function KeepAliveProvider(props:PropsWithChildren<Props>){
     //cacheStates存放所有的缓存信息 dispatch派发动作方法，可以通过派发动作修改缓存信息
     let [cacheStates,dispatch] = useReducer(cacheReducer,{});
-    const mount = useCallback(({cacheId,reactElement})=>{
+    const mount = useCallback(({cacheId,element})=>{
         if(cacheStates[cacheId]){
             let cacheState = cacheStates[cacheId] as CacheState;
             if(cacheState.status === cacheTypes.DESTROY){
                 let doms = cacheState.doms;//获取 到老的真实DOM
                 doms.forEach(dom=>dom.parentNode?.removeChild(dom));
-                dispatch({type:cacheTypes.CREATE,payload:{cacheId,reactElement}});//创建缓存，开始代
+                dispatch({type:cacheTypes.CREATE,payload:{cacheId,element}});//创建缓存，开始创建
             }
         }else{
-            dispatch({type:cacheTypes.CREATE,payload:{cacheId,reactElement}});//创建缓存，开始代孕
+            dispatch({type:cacheTypes.CREATE,payload:{cacheId,element}});//创建缓存，开始创建
         }
     },[cacheStates]);
     let handleScroll = useCallback((cacheId,event)=>{
@@ -35,7 +35,7 @@ function KeepAliveProvider(props:PropsWithChildren<Props>){
         <CacheContext.Provider value={{cacheStates,dispatch,mount,handleScroll}}>
             {props.children}
             {
-                Object.values(cacheStates).filter(cacheState=>cacheState.status!==cacheTypes.DESTROY).map(({cacheId,reactElement})=>(
+                Object.values(cacheStates).filter(cacheState=>cacheState.status!==cacheTypes.DESTROY).map(({cacheId,element})=>(
                     <div id={`cache-${cacheId}`} key={cacheId} ref={
                         //如果给原生组件添加了ref,那么当此真实DOM渲染到页之后会执行回调函数
                         (divDOM)=>{
@@ -46,7 +46,7 @@ function KeepAliveProvider(props:PropsWithChildren<Props>){
                                 dispatch({type:cacheTypes.CREATED,payload:{cacheId,doms}});
                             }
                         }
-                    }>{reactElement}</div>//divDOM儿子们就是这个reactElement渲染出来的真实DOM
+                    }>{element}</div>//divDOM儿子们就是这个reactElement渲染出来的真实DOM
                 ))
             }
         </CacheContext.Provider>

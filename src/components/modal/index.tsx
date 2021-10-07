@@ -159,7 +159,6 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
 									appearance="secondary"
 									onClick={() => {
 										onCancel ? onCancel(setState) : setState(false);
-										console.log('1===>>>>', callback);
 										if (callback) callback(false);
 									}}
 									style={{ marginLeft: "10px" }}

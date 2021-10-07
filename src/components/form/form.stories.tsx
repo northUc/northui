@@ -7,10 +7,9 @@ import {
 import { action } from "@storybook/addon-actions";
 import { Validate } from './async-validator';
 const uniqueUserName = (rule:Validate,value: string | []) => {
-    console.log('==>>', rule);
     return new Promise((resolve,rejevt)=>{
         setTimeout(()=>{
-            if(value === 'zhufeng'){
+            if(value === 'sg'){
                 resolve('用户名已被占用')
             } else {
                 resolve('')

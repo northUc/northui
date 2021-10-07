@@ -115,7 +115,6 @@ export function Pagination(props: PaginationProps) {
 		}
 		return number;
 	}, [barMaxSize, defaultCurrent, pageSize, total]);
-	console.log(totalPage);
 	useEffect(()=>{
 		if(callback)callback(current)
 	},[callback, current]);

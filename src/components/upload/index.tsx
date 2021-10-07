@@ -119,11 +119,9 @@ type UploadProps = {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
   
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	  console.log('=>1', typeof e.target.files, e.target.files);
 		if (!e.target.files) return;
 	  if (e.target.files && e.target.files.length <= 0) return;
 	  let filelist = Array.from(e.target.files);
-	 console.log('===>', filelist);
 	  filelist.forEach((f, i) => {
 		//裁剪会改变file
 		const restfn = (f: File) => {
@@ -171,7 +169,6 @@ type UploadProps = {
 		  }
 		};
 		setResCallback({ restfn });
-		console.log('--->', showSlice);
 		if (showSlice) {
 		  setModalOpen(true);
 		  showModalToSlice(f, canvasRef, modalContent);
@@ -240,7 +237,6 @@ type UploadProps = {
         // base64格式:类型+,+数据 
         // atob 转换的时候只能对base64的数据进行处理
         let bytes = atob(_href.split(',')[1])
-        console.log('==>bytes', bytes);
         let arrayBuffer = new ArrayBuffer(bytes.length)
         let uint8Array = new Uint8Array(arrayBuffer);
         for(let i=0;i<bytes.length;i++){

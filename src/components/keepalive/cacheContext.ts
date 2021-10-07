@@ -1,15 +1,12 @@
 import React from 'react';
-// const CacheContext = React.createContext({
-//     mount: ()=>{},
-//     cacheStates: {},
-//     dispatch: {}
-// });
-const _Mount = (_:{cacheId: string, reactElement : any})=>{};
+import { Action } from './cache-types'
+const _Mount = (_:{cacheId: string, element : JSX.Element})=>{};
 
 const defaultValue = {
     mount: _Mount,
     cacheStates: {},
-    dispatch: {},
+    // eslint-disable-next-line no-empty-pattern
+    dispatch: ({}:Action)=>{},
     handleScroll: (cacheId: any,event: any)=>{}
 }
 export type DefaultValue = typeof defaultValue;

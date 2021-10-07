@@ -83,7 +83,6 @@ class TreeNode extends React.Component<Props> {
                             {
                                 data.map((item: TreeData, _index:number)=> {
                                     const {icon,caret} = this.caretFn(data[_index])
-                                    console.log('===>', item.name, item.collapsed);
                                     return (
                                         <div key={_index}>
                                             <div className="inner">

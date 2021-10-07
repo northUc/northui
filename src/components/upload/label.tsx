@@ -174,7 +174,6 @@ export const postData = function (
     successCallback: ((res: any, i: number) => void) | undefined,
     failCallback: ((res: any, i: number) => void) | undefined
 ) {
-	console.log('===>files',file, file.name, file.size);
     const formData = new FormData();
     formData.append(filename, file);
     const source = axios.CancelToken.source();

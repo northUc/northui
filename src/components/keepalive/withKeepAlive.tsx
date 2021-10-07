@@ -2,15 +2,22 @@ import React, { useContext, useRef,useEffect } from "react";
 import CacheContext, {DefaultValue} from './cacheContext';
 import * as cacheTypes from './cache-types';
 import {v4} from 'uuid';//v3执行会返回一个永远独一无2的值
+import { Dispatch } from './cache-types'
 type CacheState = {
     [_: string]: {
         doms: HTMLElement[],
         status: string,
-        scrolls:any
+        scrolls: {
+            [_: string]: number
+        }
     },
 }
 
-function withKeepAlive(OldComponent: any,{cacheId=v4(),scroll= false}: any){
+type WrappedComponentProps = {
+    dispatch: Dispatch,
+}
+// React.FC<WrappedComponentProps> | React.ComponentClass<WrappedComponentProps> 实例化之后就 成  JSX.Element类型了
+function withKeepAlive(OldComponent: React.FC<WrappedComponentProps> | React.ComponentClass<WrappedComponentProps>,{cacheId=v4(),scroll= false}){
     return function(props: JSX.IntrinsicAttributes){
         let {cacheStates,dispatch,mount,handleScroll} = useContext<DefaultValue>(CacheContext);
         let divRef:React.RefObject<HTMLDivElement> = useRef(null);
@@ -38,8 +45,8 @@ function withKeepAlive(OldComponent: any,{cacheId=v4(),scroll= false}: any){
                     });
                 }
             }else{//如果孩子还没有，去派生吧
-                const reactElement = <OldComponent {...props} dispatch={dispatch}/>
-                mount({cacheId,reactElement});
+                const element = <OldComponent {...props} dispatch={dispatch}/>
+                mount({cacheId,element});
             }
         },[cacheStates, dispatch, mount, props]);
         return (
