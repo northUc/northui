@@ -1,5 +1,5 @@
 {
-  "name": "north-ui",
+  "name": "north-react-ui",
   "version": "1.0.0",
   "private": false,
   "module": "dist/index.js",
