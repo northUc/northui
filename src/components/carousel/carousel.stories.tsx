@@ -13,12 +13,22 @@ type ComponentType = ComponentStory<typeof Carousel>
 
 const height = number("height", 300);
 const num = number("item number", 4);
+let n = [{
+	bg:'red'
+	},
+	{
+		bg:'blue'
+	},
+	{
+		bg:'green'
+	}]
 export const knobsCarousel:ComponentType = (args) => {
 	return (
 		<Carousel
 			{...args}
 		>
-			{new Array(num).fill(height).map((v, i) => DivExample(v, i))}
+			{/* {new Array(num).fill(height).map((v, i) => DivExample(v, i))} */}
+			{n.map((v,i)=>DivExample(300, i, v.bg))}
 		</Carousel>
 	);
 }
@@ -37,11 +47,12 @@ knobsCarousel.args = {
 	animationDelay:number("animationDelay", 500),
 	autoplayDelay:number("autoplayDelay", 5000),
 }
-const DivExample = function (height: number, index: number) {
+const DivExample = function (height: number, index: number, bg: string) {
 	return (
 		<div
 			style={{
-				background: "#364d"+index+index,
+				background: bg,
+				// background: "#364d"+index+index,
 			}}
 			key={index}
 		>

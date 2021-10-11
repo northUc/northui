@@ -72,6 +72,8 @@ const Wrapper = styled.div<WrapperProps>`
 	padding: 10px;
 	border-radius: 5px;
 `;
+
+// 当点击的时候  把当前点击目标放到中间
 function currentSetMap(
 	current: number,
 	map: [number, number, number]
@@ -158,28 +160,34 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 		}
 		return len;
 	}, [props.children]);
-	const [start, setStart] = useState(0);
-	const touchStart = (e: TouchEvent<HTMLDivElement>) => {
-		setStart(e.touches[0].clientX);
-	};
-	const touchEnd = (e: TouchEvent<HTMLDivElement>) => {
-		let end = e.changedTouches[0].clientX;
-		let val = end - start;
-		let abs = Math.abs(val);
-		if (abs > touchDiff!) {
-			//说明可以进一步判断
-			if (val > 0) {
-				//从左往右 向左翻
-				toMove(false, totalLen, indexMap, setIndexMap);
-			} else {
-				toMove(true, totalLen, indexMap, setIndexMap);
-			}
-		}
-	};
+	// 滑动才用到
+	// const [start, setStart] = useState(0);
+	// const touchStart = (e: TouchEvent<HTMLDivElement>) => {
+	// 	setStart(e.touches[0].clientX);
+	// };
+	// const touchEnd = (e: TouchEvent<HTMLDivElement>) => {
+	// 	let end = e.changedTouches[0].clientX;
+	// 	let val = end - start;
+	// 	let abs = Math.abs(val);
+	// 	if (abs > touchDiff!) {
+	// 		//说明可以进一步判断
+	// 		if (val > 0) {
+	// 			//从左往右 向左翻
+	// 			toMove(false, totalLen, indexMap, setIndexMap);
+	// 		} else {
+	// 			toMove(true, totalLen, indexMap, setIndexMap);
+	// 		}
+	// 	}
+	// };
 	useMemo(() => {
+		// 首次
 		let map: [number, number, number] = [-1, -1, -1];
 		map[1] = defaultIndex!;
 		let res = mapToState(map, props.children, totalLen);
+		// map 0 代表上一个移动的元素在左边 如果上一个移动的元素在右边 他则是0
+		// map 1 代表当前的移动的元素
+		// map 2 代表上一个移动的元素在右边 如果上一个移动的元素在左边 他则是0
+		// res 表示 当前存储的 ReactNode
 		setState(res);
 		setIndexMap(map);
 	}, [defaultIndex, props.children, totalLen]);
@@ -190,9 +198,9 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 			let tmp = indexMap.map((v) => {
 				return v !== -1 ? child[v] : null;
 			});
-			let sign: boolean;
 			setState(tmp); //后setState会有补足问题必须先设
-
+			// 动画 部分。。。。。。。。。。。
+			let sign: boolean;
 			if (indexMap[0] === -1 && indexMap[2] === -1) {
 				//首轮
 				return;
@@ -245,6 +253,7 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 			viewportBoxshadow={viewportBoxshadow!}
 			{...rest}
 		>
+			{state.length}
 			<div className="viewport"
 				style={{
 					width: `100%`,
@@ -254,8 +263,8 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 					borderRadius: "10px",
 					boxShadow: viewportBoxshadow,
 				}}
-				onTouchStart={touchStart}
-				onTouchEnd={touchEnd}
+				// onTouchStart={touchStart}
+				// onTouchEnd={touchEnd}
 			>
 				<Transition
 					animatein={animation.animatein}
@@ -263,7 +272,7 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 					delay={animationDelay!}
 					width={bound?.width!}
 				>
-					<div
+					 <div
 						style={{
 							display: "flex",
 							width: `${bound?.width! * 3}px`,
@@ -271,6 +280,7 @@ export function Carousel(props: PropsWithChildren<CarouselProps>) {
 							left: `${-bound?.width!}px`,
 						}}
 					>
+						{/* state[1] 永远是显示的那个元素 */}
 						{state.map((v, i) => (
 							<div
 								key={i}
