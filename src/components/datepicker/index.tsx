@@ -176,23 +176,37 @@ const isCurrentDay = function(current: Date, day: number, onMonth: boolean) {
     return current.getDate() === day && onMonth;
 };
 
+/**
+ * 
+ * @param year 
+ * @param month 
+ * @param day 
+ * @returns 
+ * 
+ * 设计的 7*6 排版
+ */
 const getDateData = function(year: number, month: number, day: number) {
     const firstDay = new Date(year, month, 1);
+    // getDay() 获取 当前是星期几
     let weekDay = firstDay.getDay(); //周日，0，周六 6
+    // 这里取7 会出现第一行全部为上个月的
     weekDay = weekDay === 0 ? 7 : weekDay;
+    // 计算当前月的 这一行的第一个日期
     let start = firstDay.getTime() - weekDay * 60 * 60 * 24 * 1000;
     let arr: DateItem[] = [];
+    // 42 = 7*6 从一个元素开始遍历 42 个元素 同时收集 本月 和 今天 的标记
     for (let i = 0; i < 42; i++) {
         let current = new Date(start + i * 60 * 60 * 24 * 1000);
         let onMonth = isCurrentMonth(current, year, month);
         arr.push({
-        day: current.getDate(),
-        isonMonth: onMonth,
-        isonDay: isCurrentDay(current, day, onMonth),
-        origin: current,
+            day: current.getDate(),
+            isonMonth: onMonth,
+            isonDay: isCurrentDay(current, day, onMonth),
+            origin: current,
         });
     }
     let k = -1;
+    // 分批打包
     return Array.from({ length: 6 }, () => {
         k++;
         return arr.slice(k * 7, (k + 1) * 7);
@@ -268,7 +282,8 @@ export function DatePicker(props: DatepickerProps) {
     }, [state, callback]);
 
     const dayData = useMemo(() => {
-        const [year, month, day] = state.split('-');
+        const [year, _month, day] = state.split('-');
+        const month =Number(_month)  -1;
         const arr = getDateData(Number(year), Number(month), Number(day)); //传的8实际是9
         return arr;
     }, [state]);
@@ -330,12 +345,12 @@ export function DatePicker(props: DatepickerProps) {
                     isonMonth={k.isonMonth}
                     key={i}
                     onClick={() => {
-                    const origin = k.origin;
-                    const newCal: calDataType = [
-                        origin.getFullYear(),
-                        origin.getMonth() - 1,
-                        origin.getDate(),
-                    ];
+                        const origin = k.origin;
+                        const newCal: calDataType = [
+                            origin.getFullYear(),
+                            origin.getMonth() - 1,
+                            origin.getDate(),
+                        ];
                     setCalData(newCal);
                     setState(generateDate(newCal));
                     setst(false);
@@ -452,6 +467,7 @@ export function DatePicker(props: DatepickerProps) {
         return null;
         } else {
         return (
+            // 面板
             <CalendarWrapper visible={st} delay={delay}>
             <CalendarHeadWrapper>
                 <div
